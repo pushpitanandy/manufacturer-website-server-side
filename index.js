@@ -16,12 +16,22 @@ async function run() {
     try {
         await client.connect();
         const toolCollection = client.db('manufacturer-database').collection('tools');
+        const reviewCollection = client.db('manufacturer-database').collection('reviews');
 
+        //load all tools
         app.get('/tool', async (req, res) => {
             const query = {};
             const cursor = toolCollection.find(query);
             const tools = await cursor.toArray();
             res.send(tools);
+        });
+
+        //load all reviews
+        app.get('/review', async (req, res) => {
+            const query = {};
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
         });
     }
     finally {
