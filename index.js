@@ -17,6 +17,7 @@ async function run() {
         await client.connect();
         const toolCollection = client.db('manufacturer-database').collection('tools');
         const reviewCollection = client.db('manufacturer-database').collection('reviews');
+        const orderCollection = client.db('manufacturer-database').collection('orders');
 
         //load all tools
         app.get('/tool', async (req, res) => {
@@ -40,6 +41,28 @@ async function run() {
             const cursor = reviewCollection.find(query);
             const reviews = await cursor.toArray();
             res.send(reviews);
+        });
+
+        //update the quantity
+        app.put('/tool/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedTool = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    availableQuantity: updatedTool.availableQuantity
+                }
+            };
+            const result = await toolCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        //add an order to the database
+        app.post('/order', async (req, res) => {
+            const newOrder = req.body;
+            const result = await orderCollection.insertOne(newOrder);
+            res.send(result);
         });
     }
     finally {
