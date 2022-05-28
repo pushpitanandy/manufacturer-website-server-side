@@ -1,6 +1,7 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -18,6 +19,7 @@ async function run() {
         const toolCollection = client.db('manufacturer-database').collection('tools');
         const reviewCollection = client.db('manufacturer-database').collection('reviews');
         const orderCollection = client.db('manufacturer-database').collection('orders');
+        const userCollection = client.db('manufacturer-database').collection('users');
 
         //load all tools
         app.get('/tool', async (req, res) => {
@@ -41,6 +43,20 @@ async function run() {
             const cursor = reviewCollection.find(query);
             const reviews = await cursor.toArray();
             res.send(reviews);
+        });
+
+        //update or insert users
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: user,
+            };
+            const result = await userCollection.updateOne(filter, updatedDoc, options);
+            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+            res.send({ result, token });
         });
 
         //update the quantity
@@ -75,7 +91,13 @@ async function run() {
             res.send(orders);
         });
 
-
+        //delete an item
+        app.delete('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await orderCollection.deleteOne(query);
+            res.send(result);
+        });
     }
     finally {
 
