@@ -121,6 +121,20 @@ async function run() {
             res.send(result);
         });
 
+        //add a tool to the database
+        app.post('/tool', async (req, res) => {
+            const newTool = req.body;
+            const result = await toolCollection.insertOne(newTool);
+            res.send(result);
+        });
+
+        //add a review to the database
+        app.post('/review', async (req, res) => {
+            const newReview = req.body;
+            const result = await reviewCollection.insertOne(newReview);
+            res.send(result);
+        });
+
         //load data for a particular user
         app.get('/order', verifyJWT, async (req, res) => {
             const email = req.query.email;
