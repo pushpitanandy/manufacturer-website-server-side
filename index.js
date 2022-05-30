@@ -202,12 +202,10 @@ async function run() {
 
         //load all orders
         app.get('/order', verifyJWT, async (req, res) => {
-            const requester = req.decoded.email;
-            const requesterAccount = await userCollection.findOne({ email: requester });
-            if (requesterAccount.role === 'admin') {
-                const orders = await orderCollection.find().toArray();
-                res.send(orders);
-            }
+
+            const orders = await orderCollection.find().toArray();
+            res.send(orders);
+
         });
 
         app.post('/create-payment-intent', verifyJWT, async (req, res) => {
