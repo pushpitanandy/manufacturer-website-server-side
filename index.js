@@ -85,6 +85,7 @@ async function run() {
             res.send({ admin: isAdmin });
         });
 
+        //make admin
         app.put('/user/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const requester = req.decoded.email;
@@ -170,9 +171,9 @@ async function run() {
         });
 
         //delete a user
-        app.delete('/user/:id', verifyJWT, async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) }
+        app.delete('/user/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
             const requester = req.decoded.email;
             const requesterAccount = await userCollection.findOne({ email: requester });
             if (requesterAccount.role === 'admin') {
