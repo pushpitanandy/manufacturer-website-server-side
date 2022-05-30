@@ -169,6 +169,18 @@ async function run() {
             res.send(result);
         });
 
+        //delete a user
+        app.delete('/user/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const requester = req.decoded.email;
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
+                result = await userCollection.deleteOne(query);
+                res.send(result);
+            }
+        });
+
         //load all users
         app.get('/user', verifyJWT, async (req, res) => {
             const users = await userCollection.find().toArray();
