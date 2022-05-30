@@ -162,7 +162,7 @@ async function run() {
             res.send(order);
         });
 
-        //delete an item
+        //delete an item from order collection
         app.delete('/order/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -170,7 +170,7 @@ async function run() {
             res.send(result);
         });
 
-        //delete a user
+        //delete a user from user collection
         app.delete('/user/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -178,6 +178,17 @@ async function run() {
             const requesterAccount = await userCollection.findOne({ email: requester });
             if (requesterAccount.role === 'admin') {
                 result = await userCollection.deleteOne(query);
+                res.send(result);
+            }
+        });
+        //delete a user from user collection
+        app.delete('/tool/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const requester = req.decoded.email;
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
+                result = await toolCollection.deleteOne(query);
                 res.send(result);
             }
         });
