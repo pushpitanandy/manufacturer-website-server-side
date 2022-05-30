@@ -171,9 +171,9 @@ async function run() {
         });
 
         //delete a user
-        app.delete('/user/:email', verifyJWT, async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email }
+        app.delete('/user/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
             const requester = req.decoded.email;
             const requesterAccount = await userCollection.findOne({ email: requester });
             if (requesterAccount.role === 'admin') {
